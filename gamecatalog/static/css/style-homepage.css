@@ -1,0 +1,70 @@
+body {
+  background-color: #16181c;
+  color: #ccdbf1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.header-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 60vh;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 3rem;
+  margin: 0;
+  color: #ccdbf1;
+}
+
+.header h2 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-top: 10px;
+  color: #aebcd4;
+}
+
+.games {
+  background-color: #dc143c;
+  padding: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 8px;
+  margin-top: -16vh;
+}
+
+.games-titulo-container {
+  background-color: #2e8b57;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.mais-esperados {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+}
+
+.jogos-mais-esperados {
+  margin: 15px;
+}
+
+.imagem-jogos-mais-esperados {
+  border-radius: 10px;
+  object-fit: cover;
+  padding: 0;
+}
+
+.games-grid-ul {
+  padding: 0;
+}
