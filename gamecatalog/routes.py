@@ -27,3 +27,18 @@ def homepage():
     except requests.exceptions.RequestException as e:
         print(f'Erro ao buscar os jogos populares: {e}')
         return render_template('homepage.html', jogos=[], erro_api="Não foi possível carregar os jogos. Tente novamente mais tarde.")
+    
+@app.route('/games/<string:game_slug>', methods=['GET', 'POST'])
+def game_page(game_slug):
+    url = f"{BASE_URL}/{game_slug}"
+    params = {
+        'key': API_KEY,
+    }
+    try:
+        resposta = requests.get(url, params=params)
+        resposta.raise_for_status()
+        jogo_detalhes = resposta.json()
+        return render_template('game_page.html', jogo=jogo_detalhes)
+    except requests.exceptions.RequestException as e:
+        print(f'Erro ao buscar os detalhes do jogo: {e}')
+        return redirect(url_for('homepage'))

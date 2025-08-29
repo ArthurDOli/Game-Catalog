@@ -10,42 +10,60 @@
     />
   </head>
   <body>
-    <!-- Header -->
-    <section class="header-section">
-      <div class="header">
-        <h1>Game Catalog</h1>
-        <h2>Explore, analize e avalie seus jogos favoritos</h2>
+    <section class="background-container">
+      <div class="background-image">
+        <img
+          src="{{ url_for('static', filename='images/background.jpg') }}"
+          alt=""
+        />
       </div>
+      <div class="overlay"></div>
     </section>
 
-    <!-- Jogos mais populares -->
-    <section>
-      <div class="games">
-        <div class="games-titulo-container">
-          <h3>Mais esperados de {{ now.year }}</h3>
+    <div class="main-content-wrapper">
+      <section class="header-section">
+        <div class="header">
+          <img
+            src="{{ url_for('static', filename='images/logo.png') }}"
+            class="h-8"
+            alt="Game Catalog Logo"
+            height="150px"
+          />
+          <h1>Game Catalog</h1>
+          <h2>Explore, analize e avalie seus jogos favoritos</h2>
         </div>
-        {% if jogos %}
-        <ul class="games-grid-ul">
-          <div class="games-grid mais-esperados">
-            {% for jogo in jogos %}
-            <li class="jogos-mais-esperados">
-              <img
-                src="{{ jogo.background_image }}"
-                alt="{{ jogo.name }}"
-                width="156px"
-                height="211"
-                class="imagem-jogos-mais-esperados"
-              />
-            </li>
-            {% endfor %}
+      </section>
+
+      <section class="info-bar">
+        <div class="games">
+          <div class="games-titulo-container">
+            <h3>Mais esperados de {{ now.year }}</h3>
           </div>
-        </ul>
-        {% else %}
-        <p>Nenhum jogo para exibir no momento.</p>
-        {% if erro_api %}
-        <p style="color: red">{{ erro_api }}</p>
-        {% endif %} {% endif %}
-      </div>
-    </section>
+          {% if jogos %}
+          <ul class="games-grid-ul">
+            <div class="games-grid mais-esperados">
+              {% for jogo in jogos %}
+              <li class="jogos-mais-esperados">
+                <a href="{{ url_for('game_page', game_slug=jogo.slug) }}">
+                  <img
+                    src="{{ jogo.background_image }}"
+                    alt="{{ jogo.name }}"
+                    width="156px"
+                    height="211px"
+                    class="imagem-jogos-mais-esperados"
+                  />
+                </a>
+              </li>
+              {% endfor %}
+            </div>
+          </ul>
+          {% else %}
+          <p>Nenhum jogo para exibir no momento.</p>
+          {% if erro_api %}
+          <p style="color: red">{{ erro_api }}</p>
+          {% endif %} {% endif %}
+        </div>
+      </section>
+    </div>
   </body>
 </html>
