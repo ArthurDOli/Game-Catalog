@@ -1,0 +1,149 @@
+body {
+  background-color: #16181c;
+  color: #ccdbf1;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.game-page-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.background-image-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.game_background_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(30%);
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.info-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60vh;
+  background-image: linear-gradient(
+    to bottom,
+    #16181c00,
+    #16181c 15%,
+    #16181c 100%
+  );
+  z-index: 1;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.game-details-content {
+  display: flex;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+.left-column {
+  flex-shrink: 0;
+  width: 173px;
+}
+
+.center-column {
+  flex-grow: 1;
+}
+
+.right-column {
+  flex-shrink: 0;
+  width: 200px;
+}
+
+.game_image {
+  border-radius: 10px;
+  object-fit: cover;
+  display: block;
+  margin-top: -80px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+h3 {
+  color: #e0e0e0;
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  margin-bottom: 5px;
+}
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.game-tag {
+  display: flex;
+  align-items: center;
+  padding: 4px 7px;
+  border: 1px solid #7a7a7a;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  color: #ccdbf1;
+  text-decoration: none;
+  background-color: transparent;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  cursor: pointer;
+}
+
+.game-tag:hover {
+  background-color: rgba(204, 219, 241, 0.1);
+  border-color: #ccdbf1;
+  color: #fff;
+}
+
+.game-tag i {
+  margin-right: 8px;
+  font-size: 1rem;
+}
+
+.h3-title {
+  padding-bottom: 5px;
+}
+
+.link-developer {
+  color: inherit;
+  transition: color 0.2s;
+}
+
+.link-developer:hover {
+  color: #fff;
+}

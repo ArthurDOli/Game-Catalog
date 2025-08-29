@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ jogo.name }} - Game Catalog</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style-game_page.css') }}"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body>
+    {% include 'navbar.html' %}
+
+    <!-- Seção Background -->
+    <section class="game-page-container">
+      <div class="background-image-wrapper">
+        <img
+          class="game_background_image"
+          src="{{ jogo.background_image }}"
+          alt="background_image {{ jogo.slug }}"
+        />
+      </div>
+    </section>
+
+    <!-- Seção Jogo -->
+    <div class="info-bar">
+      <div class="game-details-content">
+        <!-- Imagem Jogo - Esquerda -->
+        <div class="left-column">
+          <img
+            class="game_image"
+            src="{{ jogo.background_image }}"
+            alt="{{ jogo.slug }}"
+            width="173px"
+            height="233px"
+          />
+        </div>
+
+        <!-- Jogo - Meio -->
+        <div class="center-column">
+          <h1>{{ jogo.name }}</h1>
+          <p>
+            Released on <b>{{ jogo.released }}</b> by
+            <a class="link-developer" href=""
+              ><b
+                >{{ jogo.publishers[0].name if jogo.publishers else 'N/A' }}</b
+              ></a
+            >
+          </p>
+          <p>{{ jogo.description_raw }}</p>
+          <hr />
+          <h3 class="h3-title">Reviews</h3>
+        </div>
+
+        <!-- Informações Jogo - Direita -->
+        <div class="right-column">
+          <h3 class="h3-title">Platforms</h3>
+          <ul>
+            <div class="tag-container">
+              {% for plataforma in jogo.platforms %}
+              <a href="" class="game-tag">
+                <li>{{ plataforma.platform.name }}</li>
+              </a>
+              {% endfor %}
+            </div>
+          </ul>
+          <h3 class="h3-title">Genre</h3>
+          <ul>
+            <div class="tag-container">
+              {% for genero in jogo.genres %}
+              <a href="" class="game-tag">
+                <li>{{ genero.name }}</li>
+              </a>
+              {% endfor %}
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
