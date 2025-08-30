@@ -41,14 +41,20 @@
         <!-- Jogo - Meio -->
         <div class="center-column">
           <h1>{{ jogo.name }}</h1>
-          <p>
-            Released on <b>{{ jogo.released }}</b> by
-            <a class="link-developer" href=""
-              ><b
-                >{{ jogo.publishers[0].name if jogo.publishers else 'N/A' }}</b
-              ></a
-            >
-          </p>
+          <div>
+            <p>
+              Released on <b>{{ jogo.released }}</b> by {% for developer in
+              jogo.developers %}
+              <a
+                href="{{ url_for('creators', developers_id=developer.id) }}"
+                class="link-developer"
+              >
+                <b>{{ developer.name }}</b>
+              </a>
+              {% if not loop.last %}, {% endif %} {% endfor %} {% if not
+              jogo.developers %}N/A{% endif %}
+            </p>
+          </div>
           <p>{{ jogo.description_raw }}</p>
           <hr />
           <h3 class="h3-title">Reviews</h3>
@@ -60,9 +66,14 @@
           <ul>
             <div class="tag-container">
               {% for plataforma in jogo.platforms %}
-              <a href="" class="game-tag">
-                <li>{{ plataforma.platform.name }}</li>
-              </a>
+              <li>
+                <a
+                  href="{{ url_for('platforms', platform_id=plataforma.platform.id) }}"
+                  class="game-tag"
+                >
+                  {{ plataforma.platform.name }}
+                </a>
+              </li>
               {% endfor %}
             </div>
           </ul>
@@ -70,9 +81,14 @@
           <ul>
             <div class="tag-container">
               {% for genero in jogo.genres %}
-              <a href="" class="game-tag">
-                <li>{{ genero.name }}</li>
-              </a>
+              <li>
+                <a
+                  href="{{ url_for('genre', genre_id=genero.id) }}"
+                  class="game-tag"
+                >
+                  {{ genero.name }}
+                </a>
+              </li>
               {% endfor %}
             </div>
           </ul>
