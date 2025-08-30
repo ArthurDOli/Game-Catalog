@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
 BASE_URL = 'https://api.rawg.io/api/games'
+PLATFORMS_URL = 'https://api.rawg.io/api/platforms'
 
 @app.route('/', methods=['GET'])
 def homepage():
@@ -41,4 +42,25 @@ def game_page(game_slug):
         return render_template('game_page.html', jogo=jogo_detalhes)
     except requests.exceptions.RequestException as e:
         print(f'Erro ao buscar os detalhes do jogo: {e}')
+        return redirect(url_for('homepage'))
+    
+@app.route('/tags/platforms/<string:platform_slug>', methods=['GET'])
+def platforms(platform_slug):
+    params = {
+        'key': API_KEY,
+        'platforms': platform_slug,
+    }
+    try:
+        resposta = requests.get(BASE_URL, params=params)
+        resposta.raise_for_status()
+        jogos = resposta.json().get('results', [])
+
+        platform_url = f'{PLATFORMS_URL}/{platform_slug}'
+        platform_resposta = requests.get(platform_url, params={'key': API_KEY})
+        platform_resposta.raise_for_status()
+        platform_detalhes = platform_resposta.json()
+        platform_name = platform_detalhes.get('name', platform_slug)
+        return render_template('platforms.html', jogos=jogos, platform_name=platform_name)
+    except requests.exceptions.RequestException as e:
+        print(f'Erro ao buscar os jogos da plataforma {e}')
         return redirect(url_for('homepage'))

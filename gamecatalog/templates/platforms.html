@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ platform_name }} - Game Catalog</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body>
+    {% include 'navbar.html' %}
+    <h1>Games for {{ platform_name }}</h1>
+    {% if jogos %}
+    <ul>
+      {% for jogo in jogos %}
+      <li>
+        <p>{{ jogo.name }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No games for this platform</p>
+    {% endif %}
+  </body>
+</html>
