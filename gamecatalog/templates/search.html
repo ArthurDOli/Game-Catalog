@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search: {{ query }} - Game Catalog</title>
+  </head>
+  <body>
+    {% include 'navbar.html' %}
+    <h1>Search results for: <b>{{ query }}</b></h1>
+    {% if erro_api %}
+    <div>
+      <b>Ocorreu um erro! {{ erro_api }}</b>
+    </div>
+    {% elif jogos %}
+    <ul>
+      {% for jogo in jogos %}
+      <li>
+        <a href="{{ url_for('game_page', game_slug=jogo.slug) }}"
+          ><img
+            src="{{ jogo.background_image }}"
+            alt="{{ jogo.name }}"
+            width="156px"
+            height="211px"
+          />
+          <p>{{ jogo.name }}</p>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No results for {{ query }}</p>
+    {% endif %}
+  </body>
+</html>

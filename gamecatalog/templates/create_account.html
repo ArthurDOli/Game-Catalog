@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Creation - Game Catalog</title>
+  </head>
+  <body>
+    <div
+      class="flex items-center justify-center min-h-screen"
+      style="background-color: #16181c"
+    >
+      <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-white text-3xl font-bold text-center mb-6">
+          Criar Conta
+        </h2>
+
+        <form method="POST" action="" class="space-y-6">
+          {{ form.hidden_tag() }}
+
+          <div>
+            {{ form.username.label(class="block text-gray-300 text-sm font-bold
+            mb-2") }} {{ form.username(class="w-full bg-gray-700 text-white
+            border border-gray-600 rounded py-2 px-3 focus:outline-none
+            focus:border-blue-500", placeholder="Seu nome de usuário") }} {% if
+            form.username.errors %}
+            <div class="text-red-500 text-xs mt-1">
+              {% for error in form.username.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          <div>
+            {{ form.email.label(class="block text-gray-300 text-sm font-bold
+            mb-2") }} {{ form.email(class="w-full bg-gray-700 text-white border
+            border-gray-600 rounded py-2 px-3 focus:outline-none
+            focus:border-blue-500", placeholder="seu@email.com") }} {% if
+            form.email.errors %}
+            <div class="text-red-500 text-xs mt-1">
+              {% for error in form.email.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          <div>
+            {{ form.senha.label(class="block text-gray-300 text-sm font-bold
+            mb-2") }} {{ form.senha(class="w-full bg-gray-700 text-white border
+            border-gray-600 rounded py-2 px-3 focus:outline-none
+            focus:border-blue-500", placeholder="********") }} {% if
+            form.senha.errors %}
+            <div class="text-red-500 text-xs mt-1">
+              {% for error in form.senha.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          <div>
+            {{ form.confirmacao_senha.label(class="block text-gray-300 text-sm
+            font-bold mb-2") }} {{ form.confirmacao_senha(class="w-full
+            bg-gray-700 text-white border border-gray-600 rounded py-2 px-3
+            focus:outline-none focus:border-blue-500", placeholder="********")
+            }} {% if form.confirmacao_senha.errors %}
+            <div class="text-red-500 text-xs mt-1">
+              {% for error in form.confirmacao_senha.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          <div>
+            {{ form.botao_submit_criar_conta(class="w-full bg-blue-600
+            hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg
+            focus:outline-none focus:shadow-outline transition duration-300") }}
+          </div>
+        </form>
+
+        <div class="text-center mt-6">
+          <a
+            href="{{ url_for('login') }}"
+            class="text-blue-400 hover:text-blue-300 text-sm"
+          >
+            Já tem uma conta? Faça Login
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
