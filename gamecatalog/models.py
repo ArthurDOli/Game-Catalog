@@ -20,6 +20,7 @@ class Review(db.Model):
     title = db.Column(db.String, nullable=False)
     text = db.Column(db.Text, nullable=False)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    game_slug = db.Column(db.String, nullable=False)
 
 class UserGameStatus(db.Model):
     id = db.Column(db.Integer, primary_key=True)

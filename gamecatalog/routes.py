@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 from gamecatalog.models import User, UserGameStatus, Review
-from gamecatalog.forms import FormCreateAccount, FormLogin
+from gamecatalog.forms import FormCreateAccount, FormLogin, FormCreateReview
 
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
@@ -67,14 +67,42 @@ def logout():
     flash("Logout Successful")
     return redirect(url_for('homepage'))
 
-# @app.route('/profile/<id !!!!!!!!!!!!!>')
-# @login_required
+@app.route('/profile/<user_id>')
+def profile(user_id):
+    user = User.query.get_or_404(int(user_id))
+    games_by_status = {
+        'Played': [],
+        'Playing': [],
+        'Want to Play': [],
+    }
+    for jogo in user.games_status:
+        try:
+            url = f'{BASE_URL}/{jogo.game_slug}'
+            params = {'key': API_KEY}
+            resposta = requests.get(url, params=params)
+            resposta.raise_for_status()
+            game_details = resposta.json()
+            if jogo.status in games_by_status:
+                games_by_status[jogo.status].append(game_details)
+        except requests.exceptions.RequestException as e:
+            print(f"Error searching game details: {jogo.game_slug}: {e}")
+    return render_template('profile.html', user=user, games_by_status=games_by_status)
 
-# @app.route('/profile/edit/<id !!!!!!!!!!!!!!!!>')
+# @app.route('/profile/edit', methods=['GET', 'POST'])
 # @login_required
+# def edit_profile():
+    
+# @app.route('/review', methods=['GET', 'POST'])
+# def review():
+
+# @app.route('/review/<id>/edit', methods=['GET', 'POST'])
+# def edit_review():
+#     review = Review.query.get_or_404(id)
+#     if review.author != current_user:
+#         return redirect(url_for('homepage'))
 
 @app.route('/add_game', methods=['POST'])
-# @login_required
+@login_required
 def add_game():
     game_slug_recebido = request.form.get('game_slug')
     status_recebido = request.form.get('status')
@@ -94,6 +122,14 @@ def add_game():
     
 @app.route('/games/<string:game_slug>', methods=['GET', 'POST'])
 def game_page(game_slug):
+    form = FormCreateReview()
+    if form.validate_on_submit():
+        new_review = Review(title=form.titulo.data, text=form.texto.data, author=current_user, game_slug=game_slug)
+        db.session.add(new_review)
+        db.session.commit()
+        flash('Review posted!')
+        return redirect(url_for('game_page', game_slug=game_slug))
+    reviews = Review.query.filter_by(game_slug=game_slug).order_by(Review.id.desc()).all()
     url = f"{BASE_URL}/{game_slug}"
     params = {
         'key': API_KEY,
@@ -102,7 +138,7 @@ def game_page(game_slug):
         resposta = requests.get(url, params=params)
         resposta.raise_for_status()
         jogo_detalhes = resposta.json()
-        return render_template('game_page.html', jogo=jogo_detalhes)
+        return render_template('game_page.html', jogo=jogo_detalhes, form=form, reviews=reviews)
     except requests.exceptions.RequestException as e:
         print(f'Error fetching the details of the game: {e}')
         return redirect(url_for('homepage'))
