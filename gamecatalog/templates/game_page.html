@@ -58,6 +58,17 @@
           <p>{{ jogo.description_raw }}</p>
           <hr />
           <h3 class="h3-title">Reviews</h3>
+          {% if reviews %} {% for review in reviews %}
+          <div>
+            <h4>{{ review.title }} - by: {{ review.author }}</h4>
+            <p>{{ review.text }}</p>
+          </div>
+          {% endfor %} {% else %}
+          <p>
+            There isn't any reviews for this game yet. Be the first to review
+            it!
+          </p>
+          {% endif %}
         </div>
 
         <!-- Informações Jogo - Direita -->
