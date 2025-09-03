@@ -18,8 +18,4 @@ login_manager.login_message_category = 'alert-info'
 
 from gamecatalog.models import User
 
-@login_manager.user_loader
-def load_usuario(user_id):
-    return User.query.get(int(user_id))
-
 from gamecatalog import routes

@@ -3,10 +3,12 @@ from gamecatalog import app, db, bcrypt
 from flask_login import login_user, logout_user, current_user, login_required
 import requests
 import os
+import secrets
 from datetime import datetime
 from dotenv import load_dotenv
 from gamecatalog.models import User, UserGameStatus, Review
-from gamecatalog.forms import FormCreateAccount, FormLogin, FormCreateReview
+from gamecatalog.forms import FormCreateAccount, FormLogin, FormCreateReview, FormEditProfile
+from PIL import Image
 
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
@@ -35,6 +37,8 @@ def homepage():
     
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
+    if current_user.is_authenticated:
+        return redirect(url_for('homepage'))
     form_create_account = FormCreateAccount()
     if form_create_account.validate_on_submit():
         senha_cript = bcrypt.generate_password_hash(form_create_account.senha.data).decode('utf-8')
@@ -47,6 +51,8 @@ def create_account():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('homepage'))
     form_login = FormLogin()
     if form_login.validate_on_submit():
         usuario = User.query.filter_by(email=form_login.email.data).first()
@@ -88,18 +94,47 @@ def profile(user_id):
             print(f"Error searching game details: {jogo.game_slug}: {e}")
     return render_template('profile.html', user=user, games_by_status=games_by_status)
 
-# @app.route('/profile/edit', methods=['GET', 'POST'])
-# @login_required
-# def edit_profile():
-    
-# @app.route('/review', methods=['GET', 'POST'])
-# def review():
+def save_image(imagem):
+    codigo = secrets.token_hex(8)
+    nome, extensao = os.path.splitext(imagem.filename)
+    nome_arquivo = nome + codigo + extensao
+    caminho_completo = os.path.join(app.root_path, 'static/images/profile_pictures', nome_arquivo)
+    tamanho = (200, 200)
+    imagem_reduzida = Image.open(imagem)
+    imagem_reduzida.thumbnail(tamanho)
+    imagem_reduzida.save(caminho_completo)
+    return nome_arquivo
 
-# @app.route('/review/<id>/edit', methods=['GET', 'POST'])
-# def edit_review():
-#     review = Review.query.get_or_404(id)
-#     if review.author != current_user:
-#         return redirect(url_for('homepage'))
+@app.route('/profile/edit', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = FormEditProfile()
+    if form.validate_on_submit():
+        current_user.email = form.email.data
+        current_user.username = form.username.data
+        if form.profile_picture.data:
+            nome_imagem = save_image(form.profile_picture.data)
+            current_user.profile_picture = nome_imagem
+        db.session.commit()
+        flash("Profile updated successfully!")
+        return redirect(url_for('profile', user_id=current_user.id))
+
+@app.route('/review/<id>/edit', methods=['GET', 'POST'])
+def edit_review():
+    review = Review.query.get_or_404(id)
+    if review.author != current_user:
+        return redirect(url_for('homepage'))
+    form = FormCreateReview()
+    if form.validate_on_submit():
+        review.title = form.titulo.data
+        review.text = form.texto.data
+        db.session.commit()
+        flash('Review updated!')
+        return redirect(url_for('game_page', game_slug=review.game_slug))
+    elif request.method == 'GET':
+        form.titulo.data = review.title
+        form.texto.data = review.text
+    return render_template('edit_review.html', form=form)
 
 @app.route('/add_game', methods=['POST'])
 @login_required
@@ -119,7 +154,7 @@ def add_game():
         flash('Game added to your list!')
     db.session.commit()
     return redirect(url_for('game_page', game_slug=game_slug_recebido))
-    
+
 @app.route('/games/<string:game_slug>', methods=['GET', 'POST'])
 def game_page(game_slug):
     form = FormCreateReview()
@@ -210,7 +245,6 @@ def creators(developers_id):
         return redirect(url_for('homepage'))
     
 @app.route('/search', methods=['GET'])
-#@login_required
 def search():
     pesquisar = request.args.get('query')
     if not pesquisar:
