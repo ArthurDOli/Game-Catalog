@@ -1,95 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Account Creation - Game Catalog</title>
-  </head>
-  <body>
-    <div
-      class="flex items-center justify-center min-h-screen"
-      style="background-color: #16181c"
-    >
-      <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 class="text-white text-3xl font-bold text-center mb-6">
-          Criar Conta
-        </h2>
+<!-- prettier-ignore -->
+{% extends 'base.html' %} 
 
-        <form method="POST" action="" class="space-y-6">
-          {{ form.hidden_tag() }}
+{% block titulo %} 
+Create Account - Game Catalog 
+{% endblock %} 
 
-          <div>
-            {{ form.username.label(class="block text-gray-300 text-sm font-bold
-            mb-2") }} {{ form.username(class="w-full bg-gray-700 text-white
-            border border-gray-600 rounded py-2 px-3 focus:outline-none
-            focus:border-blue-500", placeholder="Seu nome de usuário") }} {% if
-            form.username.errors %}
-            <div class="text-red-500 text-xs mt-1">
-              {% for error in form.username.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-            {% endif %}
-          </div>
+{% block content %}
+<div class="relative h-screen w-full flex items-center justify-center pt-16">
+  <div class="absolute inset-0 z-0" style="filter: brightness(30%)">
+    <img
+      src="{{ url_for('static', filename='images/background.jpg') }}"
+      alt="Background Image"
+      class="w-full h-full object-cover"
+    />
+  </div>
 
-          <div>
-            {{ form.email.label(class="block text-gray-300 text-sm font-bold
-            mb-2") }} {{ form.email(class="w-full bg-gray-700 text-white border
-            border-gray-600 rounded py-2 px-3 focus:outline-none
-            focus:border-blue-500", placeholder="seu@email.com") }} {% if
-            form.email.errors %}
-            <div class="text-red-500 text-xs mt-1">
-              {% for error in form.email.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-            {% endif %}
-          </div>
-
-          <div>
-            {{ form.senha.label(class="block text-gray-300 text-sm font-bold
-            mb-2") }} {{ form.senha(class="w-full bg-gray-700 text-white border
-            border-gray-600 rounded py-2 px-3 focus:outline-none
-            focus:border-blue-500", placeholder="********") }} {% if
-            form.senha.errors %}
-            <div class="text-red-500 text-xs mt-1">
-              {% for error in form.senha.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-            {% endif %}
-          </div>
-
-          <div>
-            {{ form.confirmacao_senha.label(class="block text-gray-300 text-sm
-            font-bold mb-2") }} {{ form.confirmacao_senha(class="w-full
-            bg-gray-700 text-white border border-gray-600 rounded py-2 px-3
-            focus:outline-none focus:border-blue-500", placeholder="********")
-            }} {% if form.confirmacao_senha.errors %}
-            <div class="text-red-500 text-xs mt-1">
-              {% for error in form.confirmacao_senha.errors %}
-              <span>{{ error }}</span>
-              {% endfor %}
-            </div>
-            {% endif %}
-          </div>
-
-          <div>
-            {{ form.botao_submit_criar_conta(class="w-full bg-blue-600
-            hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg
-            focus:outline-none focus:shadow-outline transition duration-300") }}
-          </div>
-        </form>
-
-        <div class="text-center mt-6">
-          <a
-            href="{{ url_for('login') }}"
-            class="text-blue-400 hover:text-blue-300 text-sm"
-          >
-            Já tem uma conta? Faça Login
-          </a>
-        </div>
-      </div>
+  <div
+    class="relative z-10 w-full max-w-md p-8 rounded-2xl shadow-lg"
+    style="background-color: #16181c"
+  >
+    <div class="flex justify-center mb-6">
+      <img
+        src="{{ url_for('static', filename='images/logo.png') }}"
+        alt="Game Catalog Logo"
+        class="w-32 h-32"
+      />
     </div>
-  </body>
-</html>
+
+    <form method="POST" action="" class="space-y-6">
+      {{ form.hidden_tag() }}
+
+      <div>
+        {{ form.username.label(class="block text-sm font-bold text-gray-300
+        mb-2") }} {{ form.username(class="w-full bg-gray-700 text-white border
+        border-gray-600 rounded-lg py-2 px-3 focus:outline-none
+        focus:border-blue-500", placeholder="Your username") }} {% if
+        form.username.errors %}
+        <div class="text-red-500 text-xs mt-1">
+          {% for erro in form.username.errors %}
+          <span>{{ erro }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form.email.label(class="block text-sm font-bold text-gray-300 mb-2")
+        }} {{ form.email(class="w-full bg-gray-700 text-white border
+        border-gray-600 rounded-lg py-2 px-3 focus:outline-none
+        focus:border-blue-500", placeholder="your@email.com") }} {% if
+        form.email.errors %}
+        <div class="text-red-500 text-xs mt-1">
+          {% for erro in form.email.errors %}
+          <span>{{ erro }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form.senha.label(class="block text-sm font-bold text-gray-300 mb-2")
+        }} {{ form.senha(class="w-full bg-gray-700 text-white border
+        border-gray-600 rounded-lg py-2 px-3 focus:outline-none
+        focus:border-blue-500", placeholder="********") }} {% if
+        form.senha.errors %}
+        <div class="text-red-500 text-xs mt-1">
+          {% for erro in form.senha.errors %}
+          <span>{{ erro }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form.confirmacao_senha.label(class="block text-sm font-bold
+        text-gray-300 mb-2") }} {{ form.confirmacao_senha(class="w-full
+        bg-gray-700 text-white border border-gray-600 rounded-lg py-2 px-3
+        focus:outline-none focus:border-blue-500", placeholder="********") }} {%
+        if form.confirmacao_senha.errors %}
+        <div class="text-red-500 text-xs mt-1">
+          {% for erro in form.confirmacao_senha.errors %}
+          <span>{{ erro }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form.botao_submit_criar_conta(class="w-full bg-blue-600
+        hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg
+        focus:outline-none focus:shadow-outline transition duration-300") }}
+      </div>
+    </form>
+
+    <div class="text-center mt-6">
+      <a
+        href="{{ url_for('login') }}"
+        class="text-blue-400 hover:text-blue-300 text-sm"
+      >
+        Already has an account? Faça Login
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

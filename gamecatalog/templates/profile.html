@@ -1,12 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ user.username }} - Game Catalog</title>
-  </head>
-  <body>
-    <h1>Página de {{ user.username }}</h1>
-    <img src="{{ user.profile_picture }}" alt="" />
-  </body>
-</html>
+<!-- prettier-ignore -->
+{% extends 'base.html' %} 
+
+{% block titulo %} 
+{{ user.username }}'s Profile - Game Catalog 
+{% endblock %} 
+
+{% block content %}
+<div class="w-full min-h-screen bg-[#16181c] text-white pt-24 pb-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col items-center text-center mb-12">
+      <img
+        src="{{ url_for('static', filename='images/profile_pictures/' + user.profile_picture) }}"
+        alt="Profile picture of {{ user.username }}"
+        class="w-32 h-32 rounded-full object-cover border-4 border-gray-700 shadow-lg"
+      />
+      <h1 class="text-4xl font-bold mt-4">{{ user.username }}</h1>
+
+      {% if user == current_user %}
+      <a
+        href="{{ url_for('edit_profile') }}"
+        class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-300"
+      >
+        Edit Profile
+      </a>
+      {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 md:gap-x-8">
+      <div class="md:col-span-1">
+        <h2 class="text-2xl font-bold text-center mb-4">Played</h2>
+        <div class="bg-[#0D0E10] rounded-lg p-4 space-y-4">
+          {% if games_by_status['Played'] %}
+          <div class="grid grid-cols-3 gap-4">
+            {% for jogo in games_by_status['Played'] %}
+            <a href="{{ url_for('game_page', game_slug=jogo.slug) }}">
+              <img
+                src="{{ jogo.background_image }}"
+                alt="{{ jogo.name }}"
+                class="w-full aspect-[3/4] object-cover rounded-md hover:opacity-80 transition-opacity"
+              />
+            </a>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-gray-500 text-center text-sm py-4">
+            No games in this list yet.
+          </p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div
+        class="md:col-span-1 md:border-l md:border-r border-[#cbdaf0]/20 px-8"
+      >
+        <h2 class="text-2xl font-bold text-center mb-4">Playing</h2>
+        <div class="bg-[#0D0E10] rounded-lg p-4 space-y-4">
+          {% if games_by_status['Playing'] %}
+          <div class="grid grid-cols-3 gap-4">
+            {% for jogo in games_by_status['Playing'] %}
+            <a href="{{ url_for('game_page', game_slug=jogo.slug) }}">
+              <img
+                src="{{ jogo.background_image }}"
+                alt="{{ jogo.name }}"
+                class="w-full aspect-[3/4] object-cover rounded-md hover:opacity-80 transition-opacity"
+              />
+            </a>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-gray-500 text-center text-sm py-4">
+            No games in this list yet.
+          </p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="md:col-span-1">
+        <h2 class="text-2xl font-bold text-center mb-4">Want to Play</h2>
+        <div class="bg-[#0D0E10] rounded-lg p-4 space-y-4">
+          {% if games_by_status['Want to Play'] %}
+          <div class="grid grid-cols-3 gap-4">
+            {% for jogo in games_by_status['Want to Play'] %}
+            <a href="{{ url_for('game_page', game_slug=jogo.slug) }}">
+              <img
+                src="{{ jogo.background_image }}"
+                alt="{{ jogo.name }}"
+                class="w-full aspect-[3/4] object-cover rounded-md hover:opacity-80 transition-opacity"
+              />
+            </a>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-gray-500 text-center text-sm py-4">
+            No games in this list yet.
+          </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,88 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Game Catalog</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style-homepage.css') }}"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  </head>
-  <body>
-    <section class="background-container">
-      <div class="background-image">
-        <img
-          src="{{ url_for('static', filename='images/background.jpg') }}"
-          alt=""
-        />
-      </div>
-      <div class="overlay"></div>
-    </section>
+<!-- prettier-ignore -->
+{% extends 'base.html' %} 
 
-    <div class="main-content-wrapper">
-      <section class="header-section">
-        <div class="header">
-          <img
-            src="{{ url_for('static', filename='images/logo.png') }}"
-            class="h-8"
-            alt="Game Catalog Logo"
-            height="150px"
-          />
-          <h1>Game Catalog</h1>
-          <h2>Explore, analize e avalie seus jogos favoritos</h2>
-          <div>
-            <a href="{{ url_for('login') }}">
-              <button
-                type="button"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-              >
-                Log In
-              </button>
-            </a>
-            <a href="{{ url_for('create_account') }}">
-              <button
-                type="button"
-                class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-              >
-                Create your account
-              </button>
-            </a>
-          </div>
-        </div>
-      </section>
+{% block titulo %} 
+Game Catalog 
+{% endblock %} 
 
-      <section class="info-bar">
-        <div class="games">
-          <div class="games-titulo-container">
-            <h3>Mais esperados de {{ now.year }}</h3>
-          </div>
-          {% if jogos %}
-          <ul class="games-grid-ul">
-            <div class="games-grid mais-esperados">
-              {% for jogo in jogos %}
-              <li class="jogos-mais-esperados">
-                <a href="{{ url_for('game_page', game_slug=jogo.slug) }}">
-                  <img
-                    src="{{ jogo.background_image }}"
-                    alt="{{ jogo.name }}"
-                    width="156px"
-                    height="211px"
-                    class="imagem-jogos-mais-esperados"
-                  />
-                </a>
-              </li>
-              {% endfor %}
-            </div>
-          </ul>
-          {% else %}
-          <p>Nenhum jogo para exibir no momento.</p>
-          {% if erro_api %}
-          <p style="color: red">{{ erro_api }}</p>
-          {% endif %} {% endif %}
-        </div>
-      </section>
+{% block head %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/homepage.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="h-screen w-full overflow-hidden flex flex-col bg-[#16181c] pt-16">
+  <div
+    class="relative w-full pt-8 pb-6 text-center text-white z-10 flex-shrink-0"
+  >
+    <div class="absolute inset-0 z-0">
+      <img
+        src="{{ url_for('static', filename='images/background.jpg') }}"
+        alt="Background Image"
+        class="w-full h-full object-cover"
+        style="filter: brightness(30%)"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-[#16181c] via-[#16181c]/50 to-transparent"
+      ></div>
     </div>
-  </body>
-</html>
+
+    <div class="relative z-10 flex flex-col items-center">
+      <img
+        src="{{ url_for('static', filename='images/logo.png') }}"
+        alt="Game Catalog Logo"
+        class="w-30 h-30 mb-2"
+      />
+      <p class="text-base text-gray-200 mb-6 max-w-md">
+        Explore, review, and rate your favorite games
+      </p>
+
+      <div class="flex space-x-4">
+        {% if current_user.is_authenticated %} {% else %}
+        <a
+          href="{{ url_for('login') }}"
+          class="bg-gray-200 text-gray-900 font-semibold py-2 px-5 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+        >
+          Log in
+        </a>
+        <a
+          href="{{ url_for('create_account') }}"
+          class="border border-gray-300 text-white font-semibold py-2 px-5 rounded-lg hover:bg-white hover:text-gray-900 transition-colors duration-300"
+        >
+          Create your account
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="flex-1 w-full z-10 flex justify-center items-start pt-24 overflow-hidden"
+  >
+    <div
+      class="w-full max-w-5xl mx-auto p-4 rounded-2xl bg-[#0D0E10] shadow-2xl"
+    >
+      <h3 class="text-lg font-bold text-white mb-4">
+        Most anticipated of {{ now.year }}
+      </h3>
+
+      {% if jogos %}
+      <div
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+      >
+        {% for jogo in jogos %}
+        <a
+          href="{{ url_for('game_page', game_slug=jogo.slug) }}"
+          class="group flex flex-col items-center text-center"
+        >
+          <div
+            class="w-full aspect-[3/4] rounded-lg overflow-hidden mb-2 shadow-md"
+          >
+            <img
+              src="{{ jogo.background_image }}"
+              alt="{{ jogo.name }}"
+              class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
+            />
+          </div>
+          <span
+            class="text-white text-xs font-semibold group-hover:text-blue-400 transition-colors"
+            >{{ jogo.name }}</span
+          >
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-gray-400">No games to display at the moment.</p>
+      {% if erro_api %}
+      <p class="text-red-500 mt-2">{{ erro_api }}</p>
+      {% endif %} {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
