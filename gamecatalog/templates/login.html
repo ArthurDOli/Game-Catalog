@@ -1,64 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login Page - Game Catalog</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
+<!-- prettier-ignore -->
+{% extends 'base.html' %} 
+
+{% block titulo %} 
+Login - Game Catalog 
+{% endblock %} 
+
+{% block content %}
+<div class="relative h-screen w-full flex items-center justify-center pt-16">
+  <div class="absolute inset-0 z-0" style="filter: brightness(30%)">
+    <img
+      src="{{ url_for('static', filename='images/background.jpg') }}"
+      alt="Background Image"
+      class="w-full h-full object-cover"
     />
-  </head>
-  <body>
-    <div class="flex items-center justify-center min-h-screen" style="background-color: #16181c;">
-    <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 class="text-white text-3xl font-bold text-center mb-6">Fazer Login</h2>
-        
-        <form method="POST" action="" class="space-y-6">
-            {{ form_login.hidden_tag() }}
+  </div>
 
-            <div>
-                {{ form_login.email.label(class="block text-gray-300 text-sm font-bold mb-2") }}
-                {{ form_login.email(class="w-full bg-gray-700 text-white border border-gray-600 rounded py-2 px-3 focus:outline-none focus:border-blue-500", placeholder="seu@email.com") }}
-                
-                {% if form_login.email.errors %}
-                    <div class="text-red-500 text-xs mt-1">
-                        {% for erro in form_login.email.errors %}
-                            <span>{{ erro }}</span>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <div>
-                {{ form_login.senha.label(class="block text-gray-300 text-sm font-bold mb-2") }}
-                {{ form_login.senha(class="w-full bg-gray-700 text-white border border-gray-600 rounded py-2 px-3 focus:outline-none focus:border-blue-500", placeholder="********") }}
-                {% if form_login.senha.errors %}
-                    <div class="text-red-500 text-xs mt-1">
-                        {% for erro in form_login.senha.errors %}
-                            <span>{{ erro }}</span>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            
-            <div class="flex items-center">
-                {{ form_login.lembrar(class="h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500") }}
-                {{ form_login.lembrar.label(class="ml-2 text-sm text-gray-300") }}
-            </div>
-
-            <div>
-                {{ form_login.botao_submit_login(class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300") }}
-            </div>
-        </form>
-        
-        <div class="text-center mt-6">
-            <a href="{{ url_for('create_account') }}" class="text-blue-400 hover:text-blue-300 text-sm">
-                Não tem uma conta? Crie uma agora
-            </a>
-        </div>
+  <div
+    class="relative z-10 w-full max-w-md p-8 rounded-2xl shadow-lg"
+    style="background-color: #16181c"
+  >
+    <div class="flex justify-center mb-6">
+      <img
+        src="{{ url_for('static', filename='images/logo.png') }}"
+        alt="Game Catalog Logo"
+        class="w-32 h-32"
+      />
     </div>
-  </body>
-</html>
+
+    <form method="POST" action="" class="space-y-6">
+      {{ form_login.hidden_tag() }}
+
+      <div>
+        {{ form_login.email.label(class="block text-sm font-bold text-gray-300
+        mb-2") }} {{ form_login.email(class="w-full bg-gray-700 text-white
+        border border-gray-600 rounded-lg py-2 px-3 focus:outline-none
+        focus:border-blue-500", placeholder="your@email.com") }} {% if
+        form_login.email.errors %}
+        <div class="text-red-500 text-xs mt-1">
+          {% for erro in form_login.email.errors %}
+          <span>{{ erro }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form_login.senha.label(class="block text-sm font-bold text-gray-300
+        mb-2") }} {{ form_login.senha(class="w-full bg-gray-700 text-white
+        border border-gray-600 rounded-lg py-2 px-3 focus:outline-none
+        focus:border-blue-500", placeholder="********") }} {% if
+        form_login.senha.errors %}
+        <div class="text-red-500 text-xs mt-1">
+          {% for erro in form_login.senha.errors %}
+          <span>{{ erro }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="flex items-center">
+        {{ form_login.lembrar(class="h-4 w-4 text-blue-600 bg-gray-700
+        border-gray-600 rounded focus:ring-blue-500") }} {{
+        form_login.lembrar.label(class="ml-2 text-sm text-gray-300") }}
+      </div>
+
+      <div>
+        {{ form_login.botao_submit_login(class="w-full bg-blue-600
+        hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg
+        focus:outline-none focus:shadow-outline transition duration-300") }}
+      </div>
+    </form>
+
+    <div class="text-center mt-6">
+      <a
+        href="{{ url_for('create_account') }}"
+        class="text-blue-400 hover:text-blue-300 text-sm"
+      >
+        Don't have an account? Create one now
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

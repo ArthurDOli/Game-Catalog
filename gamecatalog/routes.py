@@ -118,6 +118,11 @@ def edit_profile():
         db.session.commit()
         flash("Profile updated successfully!")
         return redirect(url_for('profile', user_id=current_user.id))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        foto_perfil = url_for('static', filename=f'images/profile_pictures/{current_user.profile_picture}')
+        return render_template('edit_profile.html', form=form, foto_perfil=foto_perfil)
 
 @app.route('/review/<id>/edit', methods=['GET', 'POST'])
 def edit_review():
@@ -183,7 +188,7 @@ def platforms(platform_id):
     params = {
         'key': API_KEY,
         'platforms': platform_id,
-        'page_size': 10,
+        'page_size': 30,
     }
     try:
         resposta = requests.get(BASE_URL, params=params)
@@ -205,7 +210,7 @@ def genre(genre_id):
     params = {
         'key': API_KEY,
         'genres': genre_id,
-        'page_size': 10,
+        'page_size': 30,
     }
     try:
         resposta = requests.get(BASE_URL, params=params)

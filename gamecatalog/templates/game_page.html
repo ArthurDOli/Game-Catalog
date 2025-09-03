@@ -1,115 +1,116 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ jogo.name }} - Game Catalog</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style-game_page.css') }}"
+{% extends 'base.html' %} {% block titulo %} {{ jogo.name }} - Game Catalog {%
+endblock %} {% block content %}
+<div class="relative min-h-screen w-full bg-[#16181c] text-white pt-16">
+  <div class="absolute top-16 left-0 w-full h-[45vh] z-0">
+    <img
+      src="{{ jogo.background_image }}"
+      alt="background_image {{ jogo.slug }}"
+      class="w-full h-full object-cover object-top"
     />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  </head>
-  <body>
-    {% include 'navbar.html' %}
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-[#16181c] via-[#16181c]/96 to-transparent"
+    ></div>
+  </div>
 
-    <!-- Seção Background -->
-    <section class="game-page-container">
-      <div class="background-image-wrapper">
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-42 pb-12">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+      <div class="md:col-span-2">
         <img
-          class="game_background_image"
           src="{{ jogo.background_image }}"
-          alt="background_image {{ jogo.slug }}"
+          alt="{{ jogo.slug }}"
+          class="w-[150px] h-[202px] object-cover rounded-lg shadow-lg"
         />
       </div>
-    </section>
 
-    <!-- Seção Jogo -->
-    <div class="info-bar">
-      <div class="game-details-content">
-        <!-- Imagem Jogo - Esquerda -->
-        <div class="left-column">
-          <img
-            class="game_image"
-            src="{{ jogo.background_image }}"
-            alt="{{ jogo.slug }}"
-            width="173px"
-            height="233px"
-          />
+      <div class="md:col-span-7">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
+          {{ jogo.name }}
+        </h1>
+        <div class="mt-2 text-sm text-gray-400">
+          <span>Released at <strong>{{ jogo.released }}</strong> by </span>
+          {% for developer in jogo.developers %}
+          <a
+            href="{{ url_for('creators', developers_id=developer.id) }}"
+            class="font-semibold text-white hover:underline"
+          >
+            {{ developer.name }}</a
+          >{% if not loop.last %}, {% endif %} {% endfor %} {% if not
+          jogo.developers %}N/A{% endif %}
         </div>
+        <p class="mt-4 text-gray-300 leading-relaxed">
+          {{ jogo.description_raw | truncate(400) }}
+        </p>
 
-        <!-- Jogo - Meio -->
-        <div class="center-column">
-          <h1>{{ jogo.name }}</h1>
-          <div>
-            <p>
-              Released on <b>{{ jogo.released }}</b> by {% for developer in
-              jogo.developers %}
+        <hr class="border-gray-700 my-8" />
+
+        <div class="space-y-6">
+          {% if current_user.is_authenticated %}
+          <h3 class="text-2xl font-bold">
+            Reviews -
+            <span style="font-weight: 400">Create/Edit your review</span>
+          </h3>
+          {% else %}
+          <h3 class="text-2xl font-bold">Reviews</h3>
+          {% endif %} {% if reviews %} {% for review in reviews %}
+          <div class="bg-[#0D0E10] p-4 rounded-lg">
+            <div class="flex justify-between items-center">
+              <h4 class="text-lg font-semibold">{{ review.title }}</h4>
+              {% if review.author == current_user %}
               <a
-                href="{{ url_for('creators', developers_id=developer.id) }}"
-                class="link-developer"
+                href="{{ url_for('edit_review', id=review.id) }}"
+                class="text-xs text-blue-400 hover:underline"
+                >Edit Review</a
               >
-                <b>{{ developer.name }}</b>
-              </a>
-              {% if not loop.last %}, {% endif %} {% endfor %} {% if not
-              jogo.developers %}N/A{% endif %}
+              {% endif %}
+            </div>
+            <p class="text-sm text-gray-400 mb-2">
+              by
+              <a
+                href="{{ url_for('profile', user_id=review.author.id) }}"
+                class="text-gray-200 hover:underline"
+                >{{ review.author.username }}</a
+              >
             </p>
-          </div>
-          <p>{{ jogo.description_raw }}</p>
-          <hr />
-          <h3 class="h3-title">Reviews</h3>
-          {% if reviews %} {% for review in reviews %}
-          <div>
-            <h4>{{ review.title }} - by: {{ review.author }}</h4>
-            {% if review.author == current_user %}
-            <a href="{{ url_for('edit_review', id=review.id) }}"
-              >Edit your review</a
-            >
-            {% endif %}
-            <p>{{ review.text }}</p>
+            <p class="text-gray-300">{{ review.text }}</p>
           </div>
           {% endfor %} {% else %}
-          <p>
-            There isn't any reviews for this game yet. Be the first to review
-            it!
+          <p class="text-gray-400">
+            There are no reviews for this game yet. Be the first to review it!
           </p>
           {% endif %}
         </div>
+      </div>
 
-        <!-- Informações Jogo - Direita -->
-        <div class="right-column">
-          <h3 class="h3-title">Platforms</h3>
-          <ul>
-            <div class="tag-container">
-              {% for plataforma in jogo.platforms %}
-              <li>
-                <a
-                  href="{{ url_for('platforms', platform_id=plataforma.platform.id) }}"
-                  class="game-tag"
-                >
-                  {{ plataforma.platform.name }}
-                </a>
-              </li>
-              {% endfor %}
-            </div>
-          </ul>
-          <h3 class="h3-title">Genre</h3>
-          <ul>
-            <div class="tag-container">
-              {% for genero in jogo.genres %}
-              <li>
-                <a
-                  href="{{ url_for('genre', genre_id=genero.id) }}"
-                  class="game-tag"
-                >
-                  {{ genero.name }}
-                </a>
-              </li>
-              {% endfor %}
-            </div>
-          </ul>
+      <div class="md:col-span-3 space-y-6">
+        <div>
+          <h3 class="text-lg font-semibold mb-3">Platforms</h3>
+          <div class="flex flex-wrap gap-2">
+            {% for plataforma in jogo.platforms %}
+            <a
+              href="{{ url_for('platforms', platform_id=plataforma.platform.id) }}"
+              class="border border-gray-600 rounded-md px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 transition-colors"
+            >
+              {{ plataforma.platform.name }}
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        <hr />
+        <div>
+          <h3 class="text-lg font-semibold mb-3">Genres</h3>
+          <div class="flex flex-wrap gap-2">
+            {% for genero in jogo.genres %}
+            <a
+              href="{{ url_for('genre', genre_id=genero.id) }}"
+              class="border border-gray-600 rounded-md px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 transition-colors"
+            >
+              {{ genero.name }}
+            </a>
+            {% endfor %}
+          </div>
         </div>
       </div>
     </div>
-  </body>
-</html>
+  </div>
+</div>
+{% endblock %}
