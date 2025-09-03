@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from flask_wtf.file import FileAllowed, FileField
 from .models import User
 from flask_login import current_user
 
@@ -26,5 +27,12 @@ class FormCreateReview(FlaskForm):
     texto = TextAreaField("Write your review here!", validators=[DataRequired()])
     botao_submit_review = SubmitField("Create Review")
 
-# class FormEditProfile(FlaskForm):
-# LEMBRAR DE FAZER ISSO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+class FormEditProfile(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    email = StringField("E-mail", validators=[DataRequired(), Email()])
+    profile_picture = FileField("Update Profile Picture", validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+    botao_submit_editar_perfil = SubmitField("Confirm Edit")
+    def validate_email(self, email):
+        if current_user.email != email.data:
+            usuario = User.query.filter_by(email=email.data).first()
+            raise ValidationError("There is already a user with this e-mail!")
