@@ -6,8 +6,8 @@ import os
 import secrets
 from datetime import datetime
 from dotenv import load_dotenv
-from gamecatalog.models import User, UserGameStatus, Review
-from gamecatalog.forms import FormCreateAccount, FormLogin, FormCreateReview, FormEditProfile
+from gamecatalog.models import User, UserGameLog
+from gamecatalog.forms import FormCreateAccount, FormLogin, FormLog, FormEditProfile
 from PIL import Image
 
 load_dotenv()
@@ -81,7 +81,7 @@ def profile(user_id):
         'Playing': [],
         'Want to Play': [],
     }
-    for jogo in user.games_status:
+    for jogo in user.logs:
         try:
             url = f'{BASE_URL}/{jogo.game_slug}'
             params = {'key': API_KEY}
@@ -124,71 +124,61 @@ def edit_profile():
         foto_perfil = url_for('static', filename=f'images/profile_pictures/{current_user.profile_picture}')
         return render_template('edit_profile.html', form=form, foto_perfil=foto_perfil)
 
-@app.route('/review/<id>/edit', methods=['GET', 'POST'])
-def edit_review():
-    review = Review.query.get_or_404(id)
-    if review.author != current_user:
-        return redirect(url_for('homepage'))
-    form = FormCreateReview()
-    if form.validate_on_submit():
-        review.title = form.titulo.data
-        review.text = form.texto.data
-        db.session.commit()
-        flash('Review updated!')
-        return redirect(url_for('game_page', game_slug=review.game_slug))
-    elif request.method == 'GET':
-        form.titulo.data = review.title
-        form.texto.data = review.text
-    return render_template('edit_review.html', form=form)
-
-@app.route('/add_game', methods=['POST'])
-@login_required
-def add_game():
-    game_slug_recebido = request.form.get('game_slug')
-    status_recebido = request.form.get('status')
-    if not game_slug_recebido or not status_recebido:
-        flash("Error, fill in all the requested information.")
-        return redirect(url_for('homepage'))
-    entrada_existente = UserGameStatus.query.filter_by(user_id=current_user.id, game_slug=game_slug_recebido).first()
-    if entrada_existente:
-        entrada_existente.status = status_recebido
-        flash('Game status updated!')
-    else:
-        new_game = UserGameStatus(user_id=current_user.id, game_slug=game_slug_recebido, status=status_recebido)
-        db.session.add(new_game)        
-        flash('Game added to your list!')
-    db.session.commit()
-    return redirect(url_for('game_page', game_slug=game_slug_recebido))
-
 @app.route('/games/<string:game_slug>', methods=['GET', 'POST'])
 def game_page(game_slug):
-    form = FormCreateReview()
-    if form.validate_on_submit():
-        new_review = Review(title=form.titulo.data, text=form.texto.data, author=current_user, game_slug=game_slug)
-        db.session.add(new_review)
-        db.session.commit()
-        flash('Review posted!')
-        return redirect(url_for('game_page', game_slug=game_slug))
-    reviews = Review.query.filter_by(game_slug=game_slug).order_by(Review.id.desc()).all()
     url = f"{BASE_URL}/{game_slug}"
     params = {
-        'key': API_KEY,
+        'key': API_KEY
     }
     try:
         resposta = requests.get(url, params=params)
         resposta.raise_for_status()
-        jogo_detalhes = resposta.json()
-        return render_template('game_page.html', jogo=jogo_detalhes, form=form, reviews=reviews)
+        jogo = resposta.json()
+        user_log = None
+        if current_user.is_authenticated:
+            user_log = UserGameLog.query.filter_by(user_id=current_user.id, game_slug=game_slug).first()
+        form = FormLog(obj=user_log)
+        game_reviews = UserGameLog.query.filter(UserGameLog.game_slug==game_slug, UserGameLog.review_text != None, UserGameLog.review_text != '').order_by(UserGameLog.id.desc()).all()
+        return render_template('game_page.html', jogo=jogo, form=form, reviews=game_reviews, user_log=user_log)
     except requests.exceptions.RequestException as e:
-        print(f'Error fetching the details of the game: {e}')
+        flash("Could not load game details")
         return redirect(url_for('homepage'))
+
+@app.route('/game/<string:game_slug>/log', methods=['POST'])
+@login_required
+def save_log(game_slug):
+    form = FormLog()
+    if form.validate_on_submit():
+        user_log = UserGameLog.query.filter_by(user_id=current_user.id, game_slug=game_slug).first()
+        if not user_log:
+            user_log = UserGameLog(user_id=current_user.id, game_slug=game_slug)
+            db.session.add(user_log)
+        user_log.status = form.status.data
+        user_log.score = form.score.data
+        user_log.review_title = form.review_title.data
+        user_log.review_text = form.review_text.data
+        db.session.commit()
+        flash('Log saved!')
+    else:
+        flash('There was an error when saving your log.')
+    return redirect(url_for('game_page', game_slug=game_slug))
+
+@app.route('/game/<string:game_slug>/log/delete', methods=['POST'])
+@login_required
+def delete_log(game_slug):
+    user_log = UserGameLog.query.filter_by(user_id=current_user.id, game_slug=game_slug).first()
+    if user_log:
+        db.session.delete(user_log)
+        db.session.commit()
+        flash('Log deleted successfully')
+    return redirect(url_for('game_page', game_slug=game_slug))
     
 @app.route('/tags/platforms/<string:platform_id>', methods=['GET'])
 def platforms(platform_id):
     params = {
         'key': API_KEY,
         'platforms': platform_id,
-        'page_size': 30,
+        'page_size': 60,
     }
     try:
         resposta = requests.get(BASE_URL, params=params)
@@ -210,7 +200,7 @@ def genre(genre_id):
     params = {
         'key': API_KEY,
         'genres': genre_id,
-        'page_size': 30,
+        'page_size': 60,
     }
     try:
         resposta = requests.get(BASE_URL, params=params)
@@ -232,7 +222,7 @@ def creators(developers_id):
     params = {
         'key': API_KEY,
         'developers': developers_id,
-        'page_size': 10,
+        'page_size': 60,
     }
     try:
         resposta = requests.get(BASE_URL, params=params)
@@ -246,7 +236,7 @@ def creators(developers_id):
         developers_name = developers_detalhes.get('name', 'Developers')
         return render_template('creators.html', jogos=jogos, developers_name=developers_name)
     except requests.exceptions.RequestException as e:
-        print(f'Error seaching for games of the genre: {e}')
+        print(f'Error seaching for games of the creators: {e}')
         return redirect(url_for('homepage'))
     
 @app.route('/search', methods=['GET'])

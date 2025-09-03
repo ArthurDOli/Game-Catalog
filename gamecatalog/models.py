@@ -12,18 +12,13 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     profile_picture = db.Column(db.String, nullable=False, default='default.jpg')
-    reviews = db.relationship('Review', backref='author', lazy=True)
-    games_status = db.relationship('UserGameStatus', backref='user', lazy=True)
+    logs = db.relationship('UserGameLog', backref='user', lazy=True, cascade="all, delete-orphan")
 
-class Review(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    text = db.Column(db.Text, nullable=False)
-    id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    game_slug = db.Column(db.String, nullable=False)
-
-class UserGameStatus(db.Model):
+class UserGameLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(20), nullable=False)
     game_slug = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    score = db.Column(db.Integer, nullable=True)
+    review_title = db.Column(db.String, nullable=True)
+    review_text = db.Column(db.Text, nullable=True)

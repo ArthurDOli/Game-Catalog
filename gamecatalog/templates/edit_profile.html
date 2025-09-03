@@ -1,0 +1,84 @@
+<!-- prettier-ignore -->
+{% extends 'base.html' %} 
+
+{% block titulo %} 
+Edit Profile - Game Catalog 
+{% endblock %} 
+
+{% block content %}
+<div
+  class="w-full min-h-screen bg-[#16181c] text-white pt-24 pb-12 flex items-center justify-center"
+>
+  <div class="w-full max-w-2xl p-8 rounded-2xl bg-[#0D0E10] shadow-2xl">
+    <h1 class="text-3xl font-bold text-center text-white mb-8">
+      Edit Your Profile
+    </h1>
+
+    <form
+      method="POST"
+      action=""
+      enctype="multipart/form-data"
+      class="space-y-6"
+    >
+      {{ form.hidden_tag() }}
+
+      <div class="flex items-center space-x-6">
+        <img
+          src="{{ foto_perfil }}"
+          alt="Current profile picture"
+          class="w-24 h-24 rounded-full object-cover border-4 border-gray-700"
+        />
+        <div class="flex-1">
+          {{ form.profile_picture.label(class="block text-sm font-bold
+          text-gray-300 mb-2") }} {{ form.profile_picture(class="w-full
+          text-gray-300 text-sm bg-gray-700 border border-gray-600 rounded-lg
+          cursor-pointer file:bg-blue-600 file:text-white file:font-bold
+          file:border-0 file:py-2 file:px-4 file:mr-4 hover:file:bg-blue-700")
+          }} {% if form.profile_picture.errors %} {% for error in
+          form.profile_picture.errors %}
+          <span class="text-red-500 text-xs mt-1">{{ error }}</span>
+          {% endfor %} {% endif %}
+        </div>
+      </div>
+
+      <hr class="border-gray-700" />
+
+      <div>
+        <label class="block text-sm font-bold text-gray-300 mb-2"
+          >Change your username</label
+        >
+        {{ form.username(class="w-full bg-gray-700 text-white border
+        border-gray-600 rounded-lg py-2 px-3 focus:outline-none
+        focus:border-blue-500") }} {% if form.username.errors %}
+        <div class="text-red-500 text-xs mt-1">
+          {% for error in form.username.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-gray-300 mb-2"
+          >Change your email</label
+        >
+        {{ form.email(class="w-full bg-gray-700 text-white border
+        border-gray-600 rounded-lg py-2 px-3 focus:outline-none
+        focus:border-blue-500") }} {% if form.email.errors %}
+        <div class="text-red-500 text-xs mt-1">
+          {% for error in form.email.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form.botao_submit_editar_perfil(class="w-full bg-blue-600
+        hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg
+        focus:outline-none focus:shadow-outline transition duration-300") }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

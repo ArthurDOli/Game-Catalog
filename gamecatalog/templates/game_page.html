@@ -14,12 +14,62 @@ endblock %} {% block content %}
 
   <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-42 pb-12">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-      <div class="md:col-span-2">
+      <div class="md:col-span-2 flex flex-col items-center">
         <img
           src="{{ jogo.background_image }}"
           alt="{{ jogo.slug }}"
           class="w-[150px] h-[202px] object-cover rounded-lg shadow-lg"
         />
+
+        {% if current_user.is_authenticated %}
+        <button
+          id="open-modal-btn"
+          class="mt-4 w-full text-center py-2 px-4 rounded-lg font-semibold text-white transition-colors duration-200 bg-[#1f2128] hover:bg-[#2a2d34]"
+        >
+          Edit Log
+        </button>
+        {% if user_log and user_log.score is not none %}
+        <div class="mt-4 text-center">
+          <p
+            class="text-xs text-gray-400 font-semibold uppercase tracking-wider"
+          >
+            Your Rating
+          </p>
+          <div
+            class="mt-1 inline-block px-2 py-1 text-lg font-bold text-white rounded border border-blue-500 bg-blue-500/20"
+          >
+            {{ user_log.score }}
+          </div>
+        </div>
+        {% endif %} {% endif %}
+
+        <div class="mt-4 text-center">
+          <p
+            class="text-xs text-gray-400 font-semibold uppercase tracking-wider"
+          >
+            Metacritic Rating
+          </p>
+          {% if jogo.metacritic %} {% set score = jogo.metacritic %} {% set
+          color_class = '' %} {% if score >= 90 %}{% set color_class =
+          'bg-green-600 border-green-500' %} {% elif score >= 75 %}{% set
+          color_class = 'bg-green-400 border-green-300 text-black' %} {% elif
+          score >= 60 %}{% set color_class = 'bg-yellow-400 border-yellow-300
+          text-black' %} {% elif score >= 45 %}{% set color_class =
+          'bg-orange-500 border-orange-400' %} {% else %}{% set color_class =
+          'bg-red-600 border-red-500' %}{% endif %}
+          <div
+            class="mt-1 inline-block px-2 py-1 text-lg font-bold rounded border {{ color_class }}"
+          >
+            {{ score }}
+          </div>
+          {% else %}
+          <div
+            class="mt-1 inline-block px-2 py-1 text-lg font-bold text-gray-500 rounded border border-gray-700"
+          >
+            N/A
+          </div>
+          {% endif %}
+        </div>
       </div>
 
       <div class="md:col-span-7">
@@ -32,8 +82,7 @@ endblock %} {% block content %}
           <a
             href="{{ url_for('creators', developers_id=developer.id) }}"
             class="font-semibold text-white hover:underline"
-          >
-            {{ developer.name }}</a
+            >{{ developer.name }}</a
           >{% if not loop.last %}, {% endif %} {% endfor %} {% if not
           jogo.developers %}N/A{% endif %}
         </div>
@@ -43,39 +92,36 @@ endblock %} {% block content %}
 
         <hr class="border-gray-700 my-8" />
 
-        <div class="space-y-6">
-          {% if current_user.is_authenticated %}
-          <h3 class="text-2xl font-bold">
-            Reviews -
-            <span style="font-weight: 400">Create/Edit your review</span>
-          </h3>
-          {% else %}
+        <div class="space-y-6" id="reviews-section">
           <h3 class="text-2xl font-bold">Reviews</h3>
-          {% endif %} {% if reviews %} {% for review in reviews %}
+          {% if reviews %} {% for review in reviews %}
           <div class="bg-[#0D0E10] p-4 rounded-lg">
             <div class="flex justify-between items-center">
-              <h4 class="text-lg font-semibold">{{ review.title }}</h4>
-              {% if review.author == current_user %}
-              <a
-                href="{{ url_for('edit_review', id=review.id) }}"
+              <h4 class="text-lg font-semibold">
+                {{ review.review_title or 'Review' }}
+              </h4>
+              {% if review.user == current_user %}
+              <button
+                onclick="openModal()"
                 class="text-xs text-blue-400 hover:underline"
-                >Edit Review</a
               >
+                Edit Your Review
+              </button>
               {% endif %}
             </div>
             <p class="text-sm text-gray-400 mb-2">
               by
               <a
-                href="{{ url_for('profile', user_id=review.author.id) }}"
+                href="{{ url_for('profile', user_id=review.user.id) }}"
                 class="text-gray-200 hover:underline"
-                >{{ review.author.username }}</a
+                >{{ review.user.username }}</a
               >
             </p>
-            <p class="text-gray-300">{{ review.text }}</p>
+            <p class="text-gray-300">{{ review.review_text }}</p>
           </div>
           {% endfor %} {% else %}
           <p class="text-gray-400">
-            There are no reviews for this game yet. Be the first to review it!
+            There are no reviews for this game yet. Be the first to log it!
           </p>
           {% endif %}
         </div>
@@ -89,13 +135,12 @@ endblock %} {% block content %}
             <a
               href="{{ url_for('platforms', platform_id=plataforma.platform.id) }}"
               class="border border-gray-600 rounded-md px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 transition-colors"
+              >{{ plataforma.platform.name }}</a
             >
-              {{ plataforma.platform.name }}
-            </a>
             {% endfor %}
           </div>
         </div>
-        <hr />
+        <hr class="border-gray-700" />
         <div>
           <h3 class="text-lg font-semibold mb-3">Genres</h3>
           <div class="flex flex-wrap gap-2">
@@ -103,9 +148,8 @@ endblock %} {% block content %}
             <a
               href="{{ url_for('genre', genre_id=genero.id) }}"
               class="border border-gray-600 rounded-md px-3 py-1 text-sm text-gray-300 hover:bg-gray-800 transition-colors"
+              >{{ genero.name }}</a
             >
-              {{ genero.name }}
-            </a>
             {% endfor %}
           </div>
         </div>
@@ -113,4 +157,115 @@ endblock %} {% block content %}
     </div>
   </div>
 </div>
-{% endblock %}
+
+{% if current_user.is_authenticated %}
+<div
+  id="log-modal"
+  class="fixed inset-0 z-50 hidden flex items-center justify-center p-4"
+>
+  <div id="modal-overlay" class="absolute inset-0 bg-black bg-opacity-75"></div>
+  <div
+    class="relative bg-[#16181c] rounded-lg shadow-xl w-full max-w-2xl text-white border border-gray-700 flex max-h-[90vh]"
+  >
+    <div class="w-1/3 flex-shrink-0">
+      <img
+        src="{{ jogo.background_image }}"
+        class="w-full h-full object-cover rounded-l-lg"
+      />
+    </div>
+    <div class="w-2/3 p-6 flex flex-col">
+      <h3 class="text-xl font-bold mb-4">{{ jogo.name }}</h3>
+      <form
+        id="log-form"
+        action="{{ url_for('save_log', game_slug=jogo.slug) }}"
+        method="POST"
+        class="flex-grow flex flex-col space-y-4 overflow-y-auto pr-2"
+      >
+        {{ form.hidden_tag() }}
+        <div>
+          <div class="flex justify-between space-x-2">
+            {% for subfield in form.status %}
+            <label class="flex-1">
+              {{ subfield(class="sr-only peer") }}
+              <div
+                class="text-center py-2 px-3 rounded-lg cursor-pointer bg-gray-700 peer-checked:bg-blue-600 hover:bg-gray-600 peer-checked:hover:bg-blue-700 transition-colors"
+              >
+                {{ subfield.label.text }}
+              </div>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <label for="score" class="font-semibold">Your Rating</label>
+          {{ form.score(class="bg-gray-700 border border-gray-600 rounded-lg p-2
+          w-24 text-center", placeholder="N/A") }}
+        </div>
+        <div>
+          {{ form.review_title(class="w-full bg-gray-700 border border-gray-600
+          rounded-lg p-2", placeholder="Review Title (Optional)") }}
+        </div>
+        <div class="flex-grow">
+          {{ form.review_text(class="w-full h-full min-h-[100px] bg-gray-700
+          border border-gray-600 rounded-lg p-2 resize-none", placeholder="Write
+          your review here...") }}
+        </div>
+      </form>
+      <div class="mt-6 flex justify-between items-center flex-shrink-0">
+        <form
+          id="delete-form"
+          action="{{ url_for('delete_log', game_slug=jogo.slug) }}"
+          method="POST"
+        >
+          <button
+            type="submit"
+            class="text-gray-400 hover:text-red-500 font-semibold transition-colors"
+          >
+            Delete Log
+          </button>
+        </form>
+        <button
+          form="log-form"
+          type="submit"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+        >
+          Save Log
+        </button>
+      </div>
+    </div>
+    <button
+      id="close-modal-btn"
+      class="absolute top-3 right-3 text-gray-400 hover:text-white"
+    >
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        ></path>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  const openBtn = document.getElementById("open-modal-btn");
+  const closeBtn = document.getElementById("close-modal-btn");
+  const overlay = document.getElementById("modal-overlay");
+  const modal = document.getElementById("log-modal");
+
+  const openModal = () => modal && modal.classList.remove("hidden");
+  const closeModal = () => modal && modal.classList.add("hidden");
+
+  if (openBtn) openBtn.addEventListener("click", openModal);
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  if (overlay) overlay.addEventListener("click", closeModal);
+</script>
+{% endif %} {% endblock %}
