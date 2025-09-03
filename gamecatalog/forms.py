@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, BooleanField, RadioField, IntegerField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange, Optional
 from flask_wtf.file import FileAllowed, FileField
 from .models import User
 from flask_login import current_user
@@ -22,11 +22,6 @@ class FormLogin(FlaskForm):
     lembrar = BooleanField("Rembemer Me")
     botao_submit_login = SubmitField("Login")
 
-class FormCreateReview(FlaskForm):
-    titulo = StringField("Post Title", validators=[DataRequired(), Length(2, 50)])
-    texto = TextAreaField("Write your review here!", validators=[DataRequired()])
-    botao_submit_review = SubmitField("Create Review")
-
 class FormEditProfile(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     email = StringField("E-mail", validators=[DataRequired(), Email()])
@@ -36,3 +31,10 @@ class FormEditProfile(FlaskForm):
         if current_user.email != email.data:
             usuario = User.query.filter_by(email=email.data).first()
             raise ValidationError("There is already a user with this e-mail!")
+        
+class FormLog(FlaskForm):
+    status = RadioField('Status', choices=["Played", "Playing", "Want to Play"], validators=[DataRequired()])
+    score = IntegerField('Your Rating', validators=[DataRequired(), NumberRange(min=0, max=10)])
+    review_title = StringField('Review Title', validators=[Optional(), Length(max=200)])
+    review_text = TextAreaField('Review')
+    submit = SubmitField('Save Log')
