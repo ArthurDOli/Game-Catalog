@@ -34,7 +34,7 @@ class FormEditProfile(FlaskForm):
         
 class FormLog(FlaskForm):
     status = RadioField('Status', choices=["Played", "Playing", "Want to Play"], validators=[DataRequired()])
-    score = IntegerField('Your Rating', validators=[DataRequired(), NumberRange(min=0, max=10)])
+    score = IntegerField('Your Rating', validators=[Optional(), NumberRange(min=0, max=10)])
     review_title = StringField('Review Title', validators=[Optional(), Length(max=200)])
     review_text = TextAreaField('Review')
     submit = SubmitField('Save Log')
