@@ -49,9 +49,9 @@ Follow the steps below to set up and run the project locally:
 
     ```bash
     python -m venv venv
-    # No Windows
+    # On Windows
     venv\Scripts\activate
-    # No macOS/Linux
+    # On macOS/Linux
     source venv/bin/activate
     ```
 
