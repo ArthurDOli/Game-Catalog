@@ -19,7 +19,7 @@ class FormCreateAccount(FlaskForm):
 class FormLogin(FlaskForm):
     email = StringField("E-mail", validators=[DataRequired(), Email()])
     senha = PasswordField("Password", validators=[DataRequired(), Length(6, 20)])
-    lembrar = BooleanField("Rembemer Me")
+    lembrar = BooleanField("Remember Me")
     botao_submit_login = SubmitField("Login")
 
 class FormEditProfile(FlaskForm):
